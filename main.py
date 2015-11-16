@@ -1,6 +1,7 @@
 from lang.ExprLexer import ExprLexer
 from lang.ExprParser import ExprParser
 from lang.Printer import Printer
+from lang.Calculator import Calculator
 from antlr4 import *
 
 if __name__ == '__main__':
@@ -12,4 +13,8 @@ if __name__ == '__main__':
     tree = parser.prog()
     printer = Printer()
     print(printer.visit(tree))
-    print('Done.')
+
+    calculator = Calculator()
+    result = calculator.visit(tree)
+    for ident in calculator.memory.keys():
+        print('{idnt} = {value}'.format(idnt=ident, value=calculator.memory[ident]))
