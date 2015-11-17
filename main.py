@@ -14,7 +14,7 @@ if __name__ == '__main__':
     printer = Printer()
     print(printer.visit(tree))
 
-    calculator = Calculator()
-    result = calculator.visit(tree)
-    for ident in calculator.memory.keys():
-        print('{idnt} = {value}'.format(idnt=ident, value=calculator.memory[ident]))
+    #calculator = Calculator()
+    #result = calculator.visit(tree)
+    #for ident in calculator.memory.keys():
+    #    print('{idnt} = {value}'.format(idnt=ident, value=calculator.memory[ident]))

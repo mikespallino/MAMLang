@@ -1,3 +1,7 @@
 a=6+5
 b=(5+78)/4
 c=a/b
+fn test (b, c, ) [
+    d=b+c
+    ret d
+]
