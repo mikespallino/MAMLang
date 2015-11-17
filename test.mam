@@ -6,3 +6,4 @@ fn test (b, c) [
     ret d
 ]
 d=test(b, c)
+test(a)

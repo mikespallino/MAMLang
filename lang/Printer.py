@@ -20,6 +20,8 @@ class Printer(ParseTreeVisitor):
             return self.visit(ctx.dec)
         if ctx.func:
             return self.visit(ctx.func)
+        if ctx.fnCall:
+            return self.visit(ctx.fnCall)
 
     def visitDecl(self, ctx):
         return '{0} = {1}'.format(ctx.ident.text, self.visit(ctx.right))
@@ -66,7 +68,12 @@ class Printer(ParseTreeVisitor):
         return ''.join(builder)
 
     def visitFuncCall(self, ctx):
-        return self.visit(ctx)
+        builder = ['']
+        builder.append(ctx.ident.text)
+        builder.append('(')
+        builder.append(self.visit(ctx.params))
+        builder.append(')')
+        return ''.join(builder)
 
     def visitExpr(self, expr):
         builder = ['']
