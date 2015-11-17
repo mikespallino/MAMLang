@@ -1,16 +1,18 @@
 grammar Expr;		
 prog      : (statement NEWLINE)* ;
-statement : dec=decl | func=funcDef;
+statement : dec=decl | func=funcDef | fnCall=funcCall ;
 decl      : ident=ID '=' right=expr ;
 funcDef   : FN ident=ID ' (' params=paramList ') ' bl=block ;
-paramList : (ident=ID split=', ')* ;
+paramList : ident=ID (split=', ' ident2=ID)*;
 block     : OPEN_SCOPE NEWLINE (TAB (statement | retrn)  NEWLINE)+ CLOSE_SCOPE ;
 retrn     : RET ident=ID ;
+funcCall  : ident=ID '(' params=paramList ')' ;
 expr      :	left=expr op=(TIMES|DIVIDE) right=expr
           |	left=expr op=(PLUS|MINUS) right=expr
           |	number=INT
           |	ident=ID
           |	'(' sub=expr ')'
+          | call=funcCall
           ;
 ID          : [a-zA-Z_$][a-zA-Z_$0-9]* ;
 NEWLINE     : [\r\n]+ ;

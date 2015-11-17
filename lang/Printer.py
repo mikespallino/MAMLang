@@ -65,6 +65,9 @@ class Printer(ParseTreeVisitor):
         builder.append(ctx.ident.text)
         return ''.join(builder)
 
+    def visitFuncCall(self, ctx):
+        return self.visit(ctx)
+
     def visitExpr(self, expr):
         builder = ['']
         if expr.number:
@@ -87,5 +90,10 @@ class Printer(ParseTreeVisitor):
                 builder.append('-')
         if expr.right:
             builder.append(self.visit(expr.right))
-
+        if expr.call:
+            builder.append(expr.call.ident.text)
+            builder.append('(')
+            for stmt in expr.call.params.children:
+                builder.append(stmt.symbol.text)
+            builder.append(')')
         return ''.join(builder)

@@ -40,6 +40,11 @@ class ExprVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by ExprParser#funcCall.
+    def visitFuncCall(self, ctx):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by ExprParser#expr.
     def visitExpr(self, ctx):
         return self.visitChildren(ctx)
