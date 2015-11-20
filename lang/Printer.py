@@ -3,6 +3,7 @@ from lang.ExprParser import ExprParser
 
 
 class Printer(ParseTreeVisitor):
+
     def visitProg(self, ctx):
         builder = ['']
         i = 0
@@ -22,6 +23,8 @@ class Printer(ParseTreeVisitor):
             return self.visit(ctx.func)
         if ctx.fnCall:
             return self.visit(ctx.fnCall)
+        if ctx.printcall:
+            return self.visit(ctx.printcall)
 
     def visitDecl(self, ctx):
         return '{0} = {1}'.format(ctx.ident.text, self.visit(ctx.right))
@@ -64,7 +67,7 @@ class Printer(ParseTreeVisitor):
 
     def visitRetrn(self, ctx):
         builder = ['ret ']
-        builder.append(ctx.ident.text)
+        builder.append(ctx.value.text)
         return ''.join(builder)
 
     def visitFuncCall(self, ctx):
@@ -104,3 +107,6 @@ class Printer(ParseTreeVisitor):
                 builder.append(stmt.symbol.text)
             builder.append(')')
         return ''.join(builder)
+
+    def visitPrintc(self, ctx):
+        return 'print({val})'.format(val=ctx.ident.text)

@@ -1,7 +1,7 @@
 from lang.ExprLexer import ExprLexer
 from lang.ExprParser import ExprParser
 from lang.Printer import Printer
-from lang.Calculator import Calculator
+from lang.Interpreter import Interpreter
 from antlr4 import *
 
 if __name__ == '__main__':
@@ -13,6 +13,9 @@ if __name__ == '__main__':
     tree = parser.prog()
     printer = Printer()
     print(printer.visit(tree))
+
+    interpreter = Interpreter()
+    interpreter.visit(tree)
 
     #calculator = Calculator()
     #result = calculator.visit(tree)

@@ -50,3 +50,8 @@ class ExprVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by ExprParser#printc.
+    def visitPrintc(self, ctx):
+        return self.visitChildren(ctx)
+
+
