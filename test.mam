@@ -6,5 +6,4 @@ fn test (b, c) [
     ret d
 ]
 k=test(b, c)
-print(d)
 print(k)
