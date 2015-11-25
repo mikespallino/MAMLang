@@ -30,6 +30,11 @@ class ExprVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by ExprParser#paramCallList.
+    def visitParamCallList(self, ctx):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by ExprParser#block.
     def visitBlock(self, ctx):
         return self.visitChildren(ctx)
@@ -40,8 +45,28 @@ class ExprVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by ExprParser#ctrlStruct.
+    def visitCtrlStruct(self, ctx):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by ExprParser#whileStruct.
+    def visitWhileStruct(self, ctx):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by ExprParser#ifStruct.
+    def visitIfStruct(self, ctx):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by ExprParser#funcCall.
     def visitFuncCall(self, ctx):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by ExprParser#condition.
+    def visitCondition(self, ctx):
         return self.visitChildren(ctx)
 
 

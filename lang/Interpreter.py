@@ -7,6 +7,7 @@ class Interpreter(ParseTreeVisitor):
     memory = {}
     function_table = {}
     context = memory
+    block_returns = []
 
     def visitProg(self, ctx):
         i = 0
@@ -26,6 +27,8 @@ class Interpreter(ParseTreeVisitor):
             return self.visit(ctx.fnCall)
         if ctx.printcall:
             return self.visit(ctx.printcall)
+        if ctx.struct:
+            return self.visit(ctx.struct)
 
     def visitExpr(self, expr):
         if expr.number:
@@ -57,22 +60,33 @@ class Interpreter(ParseTreeVisitor):
     def visitFuncDef(self, ctx):
         func_mem = {}
         ident = ctx.ident.text
-        params = ctx.params
+        params = self.visit(ctx.params)
         block = ctx.bl
-        self.function_table[ident] = (self.visit(params), func_mem, block, )
+        self.function_table[ident] = (params, func_mem, block, )
 
     def visitFuncCall(self, ctx):
         ident = ctx.ident.text
         if ident in self.function_table.keys():
             params_list = self.visit(ctx.params)
             self.context = self.function_table[ident][1]
+            param_idx = 0
             for param in params_list:
                 param = param.strip()
-                self.context[param] = self.memory[param]
+                if param[0].isdigit():
+                    new_id = self.function_table[ident][0][param_idx]
+                    self.context[new_id] = int(param)
+                else:
+                    if param in self.memory.keys() and param not in self.context.keys():
+                        self.context[param] = self.memory[param]
+                    else:
+                        new_val = self.context[param]
+                        new_id = self.function_table[ident][0][param_idx]
+                        self.context[new_id] = new_val
+                param_idx += 1
             for val in self.memory.keys():
                 if val not in self.context.keys():
                     self.context[val] = self.memory[val]
-            if params_list == self.function_table[ident][0]:
+            if len(params_list) == len(self.function_table[ident][0]):
                 return_val = self.visit(self.function_table[ident][2])
                 self.context = self.memory
                 return return_val
@@ -95,6 +109,9 @@ class Interpreter(ParseTreeVisitor):
     def visitParamList(self, ctx):
         return ''.join([stmt.symbol.text for stmt in ctx.children]).split(',')
 
+    def visitParamCallList(self, ctx):
+        return ''.join([stmt.symbol.text for stmt in ctx.children]).split(',')
+
     def visitDecl(self, ctx):
         self.context[ctx.ident.text] = self.visit(ctx.right)
 
@@ -102,6 +119,11 @@ class Interpreter(ParseTreeVisitor):
         for stmt in ctx.children:
             if isinstance(stmt, ExprParser.RetrnContext):
                 return self.visit(stmt)
+                # val = self.visit(stmt)
+                # if isinstance(val, list):
+                #     self.block_returns.extend(val)
+                # else:
+                #     self.block_returns.append(val)
             else:
                 self.visit(stmt)
 
@@ -112,3 +134,52 @@ class Interpreter(ParseTreeVisitor):
             print(self.context[ctx.ident.text])
         else:
             raise Exception('Variable: {val} not defined.'.format(val=ctx.ident.text))
+
+    def visitCondition(self, ctx):
+        leftVal = self.context[ctx.left.text]
+        op = ctx.op.type
+        rightVal = None
+        if ctx.right.text in self.context.keys() and not(ctx.right.text[0].isdigit()):
+            rightVal = self.context[ctx.right.text]
+        elif ctx.right.text in self.context.keys() and ctx.right.text[0].isdigit():
+            print(self.context)
+            raise Exception('Variable: {val} not defined.'.format(val=ctx.right.text))
+        else:
+            rightVal = int(ctx.right.text)
+        if op == ExprParser.EQ:
+            return leftVal == rightVal
+        elif op == ExprParser.NEQ:
+            return leftVal != rightVal
+        elif op == ExprParser.LT:
+            return leftVal < rightVal
+        elif op == ExprParser.LTEQ:
+            return leftVal <= rightVal
+        elif op == ExprParser.GT:
+            return leftVal > rightVal
+        elif op == ExprParser.GTEQ:
+            return leftVal >= rightVal
+        else:
+            raise Exception('Operator: {op} not supported here'.format(op=ctx.op))
+
+    def visitCtrlStruct(self, ctx):
+        if ctx.whileStr:
+            return self.visit(ctx.whileStr)
+        if ctx.ifStr:
+            return self.visit(ctx.ifStr)
+
+        return None
+
+    def visitWhileStruct(self, ctx):
+        cond = self.visit(ctx.cond)
+        while cond:
+            self.visit(ctx.bl)
+            cond = self.visit(ctx.cond)
+
+        return None
+
+    def visitIfStruct(self, ctx):
+        cond = self.visit(ctx.cond)
+        if cond:
+            return self.visit(ctx.bl)
+        else:
+            return self.visit(ctx.bl2)

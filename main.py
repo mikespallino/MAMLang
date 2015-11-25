@@ -11,8 +11,8 @@ if __name__ == '__main__':
     parser = ExprParser(tokens)
 
     tree = parser.prog()
-    printer = Printer()
-    print(printer.visit(tree))
+    # printer = Printer()
+    # print(printer.visit(tree))
 
     interpreter = Interpreter()
     interpreter.visit(tree)

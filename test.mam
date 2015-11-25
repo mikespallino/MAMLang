@@ -1,9 +1,41 @@
-a=6+5
-b=(5+78)/4
-c=a/b
-fn test (b, c) [
-    d=b+c
-    ret d
+k=3
+m=5
+
+fn fib(n)[
+    if (n <= 1) [
+        ret n
+    ] else [
+        n1 = n - 1
+        n2 = n - 2
+        a = fib(n1)
+        b = fib(n2)
+        c = a + b
+    ]
+    ret c
 ]
-k=test(b, c)
+
+fn fac(num) [
+    sum=num
+    while (num > 1) [
+        num = num - 1
+        sum = sum * num
+    ]
+    ret sum
+]
+
+if (k==3) [
+    print(k)
+    k=k-1
+] else [
+    print(k)
+]
 print(k)
+while (k<m) [
+    print(k)
+    k = k + 1
+]
+
+val = fac(5)
+print(val)
+val2 = fib(5)
+print(val2)
