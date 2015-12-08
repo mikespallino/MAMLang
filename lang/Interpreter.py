@@ -7,6 +7,7 @@ class Interpreter(ParseTreeVisitor):
     memory = {'memory_type': 'global'}
     function_table = {}
     context = memory
+    return_val = 0
 
     def visitProg(self, ctx):
         i = 0
@@ -126,10 +127,11 @@ class Interpreter(ParseTreeVisitor):
     def visitBlock(self, ctx):
         for stmt in ctx.children:
             if isinstance(stmt, ExprParser.RetrnContext):
-                return self.visit(stmt)
+                self.return_val = self.visit(stmt)
+                return self.return_val
             else:
                 self.visit(stmt)
-        return 0
+        return self.return_val if isinstance(ctx.parentCtx, ExprParser.FuncDefContext) else 0
 
     def visitPrintc(self, ctx):
         if ctx.ident.text in self.context.keys():
