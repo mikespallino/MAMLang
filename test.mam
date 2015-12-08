@@ -1,20 +1,26 @@
 k=3
 m=5
 
-fn fib(n)[
-    if (n <= 1) [
-        ret n
+fn babyRecurse (n) [
+    result = 1
+    if (n == 1) [
+        ret 1
     ] else [
         n1 = n - 1
-        n2 = n - 2
-        a = fib(n1)
-        b = fib(n2)
-        c = a + b
+        b = babyRecurse(n1)
+        result = b
     ]
-    ret c
+
+    ret result
 ]
 
-fn fac(num) [
+fn printForever(num) [
+    print(k)
+    printForever(k)
+]
+
+fn fact(num) [
+    print(num)
     sum=num
     while (num > 1) [
         num = num - 1
@@ -22,6 +28,12 @@ fn fac(num) [
     ]
     ret sum
 ]
+
+val1 = fact(5)
+print(val1)
+
+val2 = babyRecurse(9)
+print(val2)
 
 if (k==3) [
     print(k)
@@ -34,8 +46,3 @@ while (k<m) [
     print(k)
     k = k + 1
 ]
-
-val = fac(5)
-print(val)
-val2 = fib(5)
-print(val2)

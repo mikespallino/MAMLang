@@ -4,16 +4,15 @@ from antlr4 import *
 
 class Interpreter(ParseTreeVisitor):
     results = []
-    memory = {}
+    memory = {'memory_type': 'global'}
     function_table = {}
     context = memory
-    block_returns = []
 
     def visitProg(self, ctx):
         i = 0
         for child in ctx.children:
             if child == ctx.NEWLINE(i):
-                i = i + 1
+                i += 1
             else:
                 self.results.append(self.visit(child))
 
@@ -66,9 +65,17 @@ class Interpreter(ParseTreeVisitor):
 
     def visitFuncCall(self, ctx):
         ident = ctx.ident.text
+        save_call_state = False
         if ident in self.function_table.keys():
             params_list = self.visit(ctx.params)
+            if self.context['memory_type'] == ident:
+                for val in self.context.keys():
+                    self.function_table[ident][1][val] = self.context[val]
+            self.function_table[ident][1]['memory_type'] = ident
             self.context = self.function_table[ident][1]
+            if self.context['memory_type'] == ident:
+                save_call_state = True
+            self.context['memory_type'] = ident
             param_idx = 0
             for param in params_list:
                 param = param.strip()
@@ -88,7 +95,8 @@ class Interpreter(ParseTreeVisitor):
                     self.context[val] = self.memory[val]
             if len(params_list) == len(self.function_table[ident][0]):
                 return_val = self.visit(self.function_table[ident][2])
-                self.context = self.memory
+                if not save_call_state:
+                    self.context = self.memory
                 return return_val
             else:
                 self.context = self.memory
@@ -100,11 +108,11 @@ class Interpreter(ParseTreeVisitor):
     def visitRetrn(self, ctx):
         if ctx.value.text in self.context.keys() and not(ctx.value.text[0].isdigit()):
             return self.context[ctx.value.text]
-        elif ctx.value.text in self.context.keys() and ctx.value.text[0].isdigit():
+        elif ctx.value.text not in self.context.keys() and not ctx.value.text[0].isdigit():
             print(self.context)
             raise Exception('Variable: {val} not defined.'.format(val=ctx.value.text))
         else:
-            return ctx.value.text
+            return int(ctx.value.text)
 
     def visitParamList(self, ctx):
         return ''.join([stmt.symbol.text for stmt in ctx.children]).split(',')
@@ -119,19 +127,13 @@ class Interpreter(ParseTreeVisitor):
         for stmt in ctx.children:
             if isinstance(stmt, ExprParser.RetrnContext):
                 return self.visit(stmt)
-                # val = self.visit(stmt)
-                # if isinstance(val, list):
-                #     self.block_returns.extend(val)
-                # else:
-                #     self.block_returns.append(val)
             else:
                 self.visit(stmt)
-
         return 0
 
     def visitPrintc(self, ctx):
         if ctx.ident.text in self.context.keys():
-            print(self.context[ctx.ident.text])
+            print('{iden} = {val}'.format(iden=ctx.ident.text, val=self.context[ctx.ident.text]))
         else:
             raise Exception('Variable: {val} not defined.'.format(val=ctx.ident.text))
 
